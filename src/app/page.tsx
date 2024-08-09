@@ -1,7 +1,7 @@
 'use client'
 import Image from "next/image";
 import { useEffect, useState } from "react";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie"
 import { document } from "postcss";
 import Link from "next/link";
 
@@ -40,7 +40,10 @@ export default function Home() {
     MobileNumber: "",
   });
 
- 
+  
+  useEffect(()=>{
+    Cookies.set("data")
+  })
 
   console.log(formData);
   
