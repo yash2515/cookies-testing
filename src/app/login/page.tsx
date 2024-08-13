@@ -1,6 +1,8 @@
 'use client'
-import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+
 const data = [
   {
     id: 1,
@@ -10,72 +12,58 @@ const data = [
   },
   {
     id: 2,
-    label: "password",
-    type: "text",
+    label: "Password",
+    type: "password",
     name: "password"
   }
+];
 
-]
-const login = () => {
-
-  const [login, setLogin] = useState<any>({
+const Login = () => {
+  const [login, setLogin] = useState<{ Email: string; password: string }>({
     Email: "",
     password: ""
-  })
-
-
-
-  const [formData, setFormData] = useState<any>({
-    firstName: "",
-    lastName: "",
-    Email: "",
-    MobileNumber: "",
   });
 
+  const [formData, setFormData] = useState<{ Email: string; password: string }>({
+    Email: "",
+    password: ""
+  });
 
-  const[dashboard,setDashboard] =useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
-    // Retrieve data from localStorage when the component mounts
+    // Retrieve data from localStorage
     const storedData = localStorage.getItem("userdata");
     if (storedData) {
       setFormData(JSON.parse(storedData));
     }
   }, []);
 
-  
   useEffect(() => {
-    // Retrieve data from localStorage when the component mounts
-    const storedDatalogin = localStorage.getItem("yash");
-    if (storedDatalogin) {
-      setFormData(JSON.parse(storedDatalogin));
-    }
-  }, []);
-
-  useEffect(() => {
-    // Check login credentials and set dashboard state
-    if (formData.Email === login.Email) {
-      setDashboard(true);
+    // Check login credentials
+    if (login.Email === formData.Email && login.password === formData.password) {
+      setIsAuthenticated(true);
     } else {
-      setDashboard(false);
+      setIsAuthenticated(false);
     }
   }, [login, formData]);
 
   const handleClick = () => {
-    localStorage.setItem("yash", JSON.stringify(login));
-  }; 
+    if (isAuthenticated) {
+      Cookies.set('token', 'your-auth-token', { expires: 1 }); // Set a token in cookies
+    }
+  };
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLogin({ ...login, [e.target.name]: e.target.value });
   };
 
- 
-  
   return (
     <div className="bg-white flex items-center flex-col m-5">
-      <h1 className="text-[20px] font-bold">LOG-IN PAGE </h1>
+      <h1 className="text-[20px] font-bold">LOG-IN PAGE</h1>
       <div className="p-10 flex flex-col gap-3">
         <div className="flex gap-2 flex-col">
-          {data.map((item:any) => (
+          {data.map((item) => (
             <div key={item.id} className="flex gap-2">
               <label className="font-semibold">{item.label}</label>
               <input
@@ -90,7 +78,7 @@ const login = () => {
           ))}
         </div>
         <Link
-          href={`${dashboard ? "/dashboard":"/"}`}
+          href={isAuthenticated ? "/dashboard" : "/"}
           className="bg-black text-white rounded-[5px] p-2 font-bold text-center"
           onClick={handleClick}
         >
@@ -98,7 +86,7 @@ const login = () => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default login
+export default Login;

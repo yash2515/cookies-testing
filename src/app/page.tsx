@@ -1,20 +1,18 @@
 'use client'
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import Cookies from "js-cookie"
-import { document } from "postcss";
-import Link from "next/link";
+import { useState } from 'react';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 const data = [
   {
     id: 1,
-    label: "firstname",
+    label: "First Name",
     type: "text",
     name: "firstName"
   },
   {
     id: 2,
-    label: "lastname",
+    label: "Last Name",
     type: "text",
     name: "lastName"
   },
@@ -26,38 +24,54 @@ const data = [
   },
   {
     id: 4,
-    label: "mobile number",
+    label: "Mobile Number",
     type: "text",
     name: "MobileNumber"
+  },
+  {
+    id: 5,
+    label: "Password",
+    type: "password",
+    name: "password"
   }
-]
+];
 
-export default function Home() {
-  const [formData, setFormData] = useState<any>({
+const roles = [
+  { id: 1, label: "User", value: "user" },
+  { id: 2, label: "Admin", value: "admin" },
+  { id: 3, label: "Super Admin", value: "superadmin" },
+];
+
+export default function Signup() {
+  const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     Email: "",
     MobileNumber: "",
+    password: "", // Added password field
+    role: "" // Added role field
   });
 
-  
-  useEffect(()=>{
-    Cookies.set("data")
-  })
+  const router = useRouter();
 
-  console.log(formData);
-  
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleClick = () => {
+  const handleSubmit = () => {
+    // Store the form data in localStorage
     localStorage.setItem("userdata", JSON.stringify(formData));
+    
+    // Set the role in cookies
+    Cookies.set('role', formData.role);
+
+    // Redirect to login page
+    router.push('/login');
   };
 
   return (
     <div className="bg-white flex items-center flex-col m-5">
-      <h1 className="text-[20px] font-bold">SIGNUP PAGE </h1>
+      <h1 className="text-[20px] font-bold">SIGNUP PAGE</h1>
       <div className="p-10 flex flex-col gap-3">
         <div className="flex gap-2 flex-col">
           {data.map((item) => (
@@ -74,13 +88,29 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <Link 
-          href={"/login"}
+        {/* Role Selection Dropdown */}
+        <div className="flex gap-2 flex-col">
+          <label className="font-semibold">Role</label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="border border-black focus:outline-none rounded-[5px]"
+          >
+            <option value="">Select Role</option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.value}>
+                {role.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
           className="bg-black text-white rounded-[5px] p-2 font-bold"
-          onClick={handleClick}
+          onClick={handleSubmit}
         >
-          signup
-        </Link>
+          Sign Up
+        </button>
       </div>
     </div>
   );

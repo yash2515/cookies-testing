@@ -1,8 +1,19 @@
+'use client'
+
+import useAuth from '@/hooks/useAuth'
 import React from 'react'
 
+
 const page = () => {
+  useAuth()
+
+
   return (
-    <div>page</div>
+
+    <>
+      
+      wellcome to dashboard
+    </>
   )
 }
 
