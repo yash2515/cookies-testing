@@ -8,7 +8,8 @@ const useRoleProtection = (allowedRoles: string[]) => {
     const router = useRouter();
     const [isAuthorized, setIsAuthorized] = useState(false);
     const role = Cookies.get('role'); // Get user role from cookies
-
+    console.log(role);
+    
     useEffect(() => {
         if (allowedRoles.includes(role || '')) {
             setIsAuthorized(true);

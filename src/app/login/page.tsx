@@ -17,8 +17,20 @@ const data = [
     name: "password"
   }
 ];
+type Role = 'admin' | 'user' ;
 
-const Login = () => {
+const defaultUsers = {
+  admin: {
+    Email: "admin.com",
+    password: "123"
+  },
+  user: {
+    Email: "yashsutariya.com",
+    password: "123"
+  },
+};
+
+const Login = ({}) => {
   const [login, setLogin] = useState<{ Email: string; password: string }>({
     Email: "",
     password: ""
@@ -36,6 +48,11 @@ const Login = () => {
     const storedData = localStorage.getItem("userdata");
     if (storedData) {
       setFormData(JSON.parse(storedData));
+    } else {
+      // Set default user data if nothing is in localStorage
+      const defaultUser = defaultUsers[role];
+      localStorage.setItem(`userdata-${role}`, JSON.stringify(defaultUser));
+      setFormData(defaultUser)
     }
   }, []);
 
@@ -78,7 +95,7 @@ const Login = () => {
           ))}
         </div>
         <Link
-          href={isAuthenticated ? "/dashboard" : "/"}
+          href={isAuthenticated ? "/dashboard" : "/signup"}
           className="bg-black text-white rounded-[5px] p-2 font-bold text-center"
           onClick={handleClick}
         >
