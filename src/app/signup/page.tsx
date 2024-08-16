@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 
@@ -42,26 +42,59 @@ const roles = [
   { id: 3, label: "Super Admin", value: "superadmin" },
 ];
 
+const defaultUsers = [
+  {
+    firstName: "Default",
+    lastName: "Admin",
+    Email: "admin@example.com",
+    MobileNumber: "1234567890",
+    password: "admin123",
+    role: "admin"
+  },
+  {
+    firstName: "Default",
+    lastName: "User",
+    Email: "user@example.com",
+    MobileNumber: "0987654321",
+    password: "user123",
+    role: "user"
+  }
+];
+
 export default function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     Email: "",
     MobileNumber: "",
-    password: "", // Added password field
-    role: "" // Added role field
+    password: "",
+    role: ""
   });
 
   const router = useRouter();
+
+  useEffect(() => {
+    // Initialize default users if not already set
+    const storedData = localStorage.getItem("userdata");
+    if (!storedData) {
+      localStorage.setItem("userdata", JSON.stringify(defaultUsers));
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = () => {
-    // Store the form data in localStorage
-    localStorage.setItem("userdata", JSON.stringify(formData));
-    
+    // Get the existing array from localStorage or initialize an empty array
+    const existingData = JSON.parse(localStorage.getItem("userdata") || "[]");
+
+    // Add the new formData to the array
+    const updatedData = [...existingData, formData];
+
+    // Store the updated array back in localStorage
+    localStorage.setItem("userdata", JSON.stringify(updatedData));
+
     // Set the role in cookies
     Cookies.set('role', formData.role);
 
@@ -115,3 +148,4 @@ export default function Signup() {
     </div>
   );
 }
+

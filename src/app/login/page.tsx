@@ -17,53 +17,54 @@ const data = [
     name: "password"
   }
 ];
-type Role = 'admin' | 'user' ;
 
-const defaultUsers = {
-  admin: {
-    Email: "admin.com",
-    password: "123"
+const defaultUsers = [
+  {
+    firstName: "Default",
+    lastName: "Admin",
+    Email: "admin@example.com",
+    MobileNumber: "1234567890",
+    password: "admin123",
+    role: "admin"
   },
-  user: {
-    Email: "yashsutariya.com",
-    password: "123"
-  },
-};
+  {
+    firstName: "Default",
+    lastName: "User",
+    Email: "user@example.com",
+    MobileNumber: "0987654321",
+    password: "user123",
+    role: "user"
+  }
+];
 
-const Login = ({}) => {
-  const [login, setLogin] = useState<{ Email: string; password: string }>({
-    Email: "",
-    password: ""
-  });
-
-  const [formData, setFormData] = useState<{ Email: string; password: string }>({
-    Email: "",
-    password: ""
-  });
-
+const Login = () => {
+  const [login, setLogin] = useState({ Email: "", password: "" });
+  const [users, setUsers] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Retrieve data from localStorage
+    // Retrieve data from localStorage or use default users
     const storedData = localStorage.getItem("userdata");
     if (storedData) {
-      setFormData(JSON.parse(storedData));
+      setUsers(JSON.parse(storedData));
     } else {
-      // Set default user data if nothing is in localStorage
-      const defaultUser = defaultUsers[role];
-      localStorage.setItem(`userdata-${role}`, JSON.stringify(defaultUser));
-      setFormData(defaultUser)
+      setUsers(defaultUsers); // Use default users if no stored data
     }
   }, []);
 
   useEffect(() => {
-    // Check login credentials
-    if (login.Email === formData.Email && login.password === formData.password) {
+    // Check login credentials against all stored users
+    const user = users.find(
+      (user) => user.Email === login.Email && user.password === login.password
+    );
+
+    if (user) {
       setIsAuthenticated(true);
+      Cookies.set('role', user.role); // Set the role in cookies
     } else {
       setIsAuthenticated(false);
     }
-  }, [login, formData]);
+  }, [login, users]);
 
   const handleClick = () => {
     if (isAuthenticated) {
@@ -78,6 +79,19 @@ const Login = ({}) => {
   return (
     <div className="bg-white flex items-center flex-col m-5">
       <h1 className="text-[20px] font-bold">LOG-IN PAGE</h1>
+
+      {/* Display Default Users */}
+      <div className="bg-gray-100 p-4 rounded-[5px] mb-5">
+        <h2 className="text-[16px] font-bold mb-2">Default Users</h2>
+        {defaultUsers.map((user, index) => (
+          <div key={index} className="mb-2">
+            <p><strong>Role:</strong> {user.role}</p>
+            <p><strong>Email:</strong> {user.Email}</p>
+            <p><strong>Password:</strong> {user.password}</p>
+          </div>
+        ))}
+      </div>
+
       <div className="p-10 flex flex-col gap-3">
         <div className="flex gap-2 flex-col">
           {data.map((item) => (
